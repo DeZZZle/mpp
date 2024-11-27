@@ -1,0 +1,68 @@
+services:
+
+    mpp-nginx:
+        image: nginx:alpine
+        container_name: mpp-nginx
+        ports:
+            - '${FORWARD_NGINX_PORT:-8000}:80'
+        volumes:
+            - './:/var/www'
+            - './deploy/nginx/conf.d:/etc/nginx/conf.d'
+        networks:
+            - mpp
+        depends_on:
+            - mpp-fpm
+
+    mpp-fpm:
+        build:
+            args:
+                xdebug_enabled: '${XDEBUG_ENABLED:-false}'
+            context: ./
+            dockerfile: deploy/fpm/Dockerfile
+        environment:
+            PHP_IDE_CONFIG: serverName=mpp.server
+        container_name: mpp-fpm
+        working_dir: /var/www/
+        volumes:
+            - './:/var/www'
+        networks:
+            - mpp
+
+    mpp-pgsql:
+        image: postgres:16
+        container_name: mpp-pgsql
+        volumes:
+            - 'mpp-pgsql:/var/lib/postgresql/data'
+        environment:
+            - POSTGRES_USER=${DB_USERNAME}
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
+            - POSTGRES_DB=${DB_DATABASE}
+        ports:
+            - '${FORWARD_PGSQL_PORT:-5432}:5432'
+        networks:
+            - mpp
+
+    mpp-redis:
+        image: redis:alpine
+        container_name: mpp-redis
+        ports:
+            - '${FORWARD_REDIS_PORT:-6379}:6379'
+        networks:
+            - mpp
+
+    mpp-adminer:
+        image: adminer
+        container_name: mpp-adminer
+        ports:
+            - '8080'
+        networks:
+            - mpp
+
+networks:
+    mpp:
+        name: mpp
+        driver: bridge
+volumes:
+    mpp-pgsql:
+        driver: local
+
