@@ -23,6 +23,8 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-install pdo pdo_pgsql pdo_mysql mbstring exif pcntl bcmath gd zip opcache sockets intl > /dev/null
 
+RUN pecl install redis && docker-php-ext-enable redis
+
 RUN if [ "$xdebug_enabled" = "true" ]; then \
         cp /tmp/conf.d/xdebug.ini $PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini && \
         pecl install xdebug && \
