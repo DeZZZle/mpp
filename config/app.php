@@ -123,4 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'yandex_iot_token' => env('YANDEX_IOT_TOKEN', ''),
+
 ];
