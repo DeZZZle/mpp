@@ -19,6 +19,7 @@ services:
                 xdebug_enabled: '${XDEBUG_ENABLED:-false}'
             context: ./
             dockerfile: deploy/fpm/Dockerfile
+        image: mpp-fpm
         environment:
             PHP_IDE_CONFIG: serverName=mpp.server
         container_name: mpp-fpm
@@ -55,6 +56,32 @@ services:
         container_name: mpp-adminer
         ports:
             - '8080'
+        networks:
+            - mpp
+
+    mpp-queue:
+        image: mpp-fpm
+        container_name: mpp-queue
+        working_dir: /var/www/
+        depends_on:
+            - mpp-fpm
+            - mpp-redis
+            - mpp-pgsql
+        volumes:
+            - './:/var/www'
+        networks:
+            - mpp
+        command: [ 'bash', '-c', 'php artisan horizon' ]
+
+    mpp-schedule:
+        image: mpp-fpm
+        container_name: mpp-schedule
+        working_dir: /var/www/
+        depends_on:
+            - mpp-fpm
+        volumes:
+            - './:/var/www'
+        command: [ 'bash', '-c', 'php artisan schedule:work' ]
         networks:
             - mpp
 

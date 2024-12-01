@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
+use App\Jobs\ClimateImportJob;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Cache;
 
 class TestCommand extends Command
 {
@@ -12,12 +11,10 @@ class TestCommand extends Command
 
     public function handle(): void
     {
-        User::factory(10)
-            ->create();
+        $deviceId = 'ba81fcc7-dd2d-4b09-b591-0c7653b5960a';
 
-        $this->info(Cache::has('test') ? 1 : 0);
-        $this->info(Cache::get('test'));
-
-        Cache::set('test', now()->toDateTimeString(), now()->addMinutes(5));
+        ClimateImportJob::dispatch(
+            $deviceId
+        );
     }
 }
