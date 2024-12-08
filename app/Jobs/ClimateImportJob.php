@@ -10,6 +10,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ClimateImportJob implements ShouldQueue, ShouldBeUnique
 {
@@ -48,6 +49,8 @@ class ClimateImportJob implements ShouldQueue, ShouldBeUnique
             Arr::get($properties->firstWhere('parameters.instance', 'humidity'), 'last_updated'),
             fn($value) => Carbon::createFromTimestamp($value)
         );
+
+        Log::info("Temperature: $temperature, Humidity: $humidity");
 
         Climate::firstOrCreate(
             [
