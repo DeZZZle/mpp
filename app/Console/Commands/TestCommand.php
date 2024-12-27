@@ -11,7 +11,7 @@ class TestCommand extends Command
 
     public function handle(): void
     {
-        $deviceId = 'ba81fcc7-dd2d-4b09-b591-0c7653b5960a';
+        $deviceId = '424c238d-e752-4f0a-97ea-f05f0b211140';
 
         ClimateImportJob::dispatch(
             $deviceId
